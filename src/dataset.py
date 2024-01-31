@@ -8,16 +8,16 @@ def unpickle(file):
         dict = pickle.load(fo, encoding='bytes')
     return dict
 def load_dataset():
-    meta = unpickle(f'cifar-10-batches-py//batches.meta')
+    meta = unpickle(f'data//cifar-10-batches-py//batches.meta')
     labels = []
     data = []
 
     for i in range(1,6):
-        dataset = unpickle(f'cifar-10-batches-py//data_batch_{i}')
+        dataset = unpickle(f'data//cifar-10-batches-py//data_batch_{i}')
         labels.append(dataset[b'labels'])
         data.append(dataset[b'data'])
 
-    test_dataset = unpickle(f'cifar-10-batches-py//test_batch')
+    test_dataset = unpickle(f'data//cifar-10-batches-py//test_batch')
 
     test_data = test_dataset[b'data'].reshape(-1,3, 32, 32).transpose(0, 2, 3, 1)
     test_labels = np.array(test_dataset[b'labels'])

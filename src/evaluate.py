@@ -16,7 +16,7 @@ for model_construction in model_constructions:
         test_accuracies.append(pickle.load(f))
 
 # Create a large figure with a 2:3 width:height ratio
-plt.figure(figsize=(15, 8))
+plt.figure(figsize=(15, 9))
 
 # Calculate the number of rows needed for the subplots
 num_rows = math.ceil(len(model_constructions) / 5.0)
@@ -26,7 +26,7 @@ plt.subplot2grid((num_rows + 2, 5), (0, 0), colspan=5, rowspan=2)
 
 for i, model_construction in enumerate(model_constructions):
     # Generate x values. Assuming they should go from 1 to the length of the accuracy list + 1
-    x_values = list(range(1, len(train_accuracies[i]) + 1))
+    x_values = list(range(1, len(test_accuracies[i]) + 1))
 
     # Plot test accuracies for this model
     plt.plot(x_values, test_accuracies[i], label=f'Test Accuracy for {model_construction}')
@@ -40,7 +40,7 @@ for i, model_construction in enumerate(model_constructions):
     plt.subplot2grid((num_rows + 2, 5), (i // 5 + 2, i % 5))
     
     x_values = list(range(1, len(train_accuracies[i]) + 1))
-    
+
     plt.plot(x_values, train_accuracies[i], label=f'Train Accuracy for {model_construction}')
     plt.plot(x_values, test_accuracies[i], label=f'Test Accuracy for {model_construction}')
 
