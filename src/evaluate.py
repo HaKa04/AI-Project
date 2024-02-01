@@ -3,7 +3,7 @@ import pickle
 import os
 import math
 
-model_constructions = ['conv_16_32_ks_3_fc_128_lr_0.0003', 'conv_16_32_ks_5_fc_128_lr_0.0003','conv_32_128_ks_3_fc_256_lr_0.0003', 'conv_32_128_ks_5_fc_256_lr_0.0003','conv_8_16_ks_3_fc_64_lr_0.0003', 'conv_8_16_ks_5_fc_64_lr_0.0003']  
+model_constructions = ['conv_16_32_ks_3_fc_128_lr_0.0003_opt_Adam', 'conv_16_32_ks_5_fc_128_lr_0.0003_opt_Adam','conv_32_128_ks_3_fc_256_lr_0.0003_opt_Adam', 'conv_32_128_ks_5_fc_256_lr_0.0003_opt_Adam','conv_8_16_ks_3_fc_64_lr_0.0003_opt_Adam', 'conv_8_16_ks_5_fc_64_lr_0.0003_opt_Adam', 'conv_16_32_64_ks_5_fc_128_64_lr_0.0003_opt_Adam', 'conv_16_32_64_ks_5_fc_128_64_lr_0.0003_opt_SGD', 'conv_24_64_128_ks_5_fc_256_128_lr_0.0003_opt_Adam','conv_24_64_128_ks_5_fc_256_128_lr_0.0003_opt_SGD','conv_12_24_48_ks_5_fc_96_48_lr_0.0003_opt_Adam','conv_12_24_48_ks_5_fc_96_48_lr_0.0003_opt_SGD']  
 
 train_accuracies = []
 test_accuracies = []
@@ -23,13 +23,13 @@ num_rows = math.ceil(len(model_constructions) / 5.0)
 
 # Create a subplot for all accuracies, taking up two rows at the top of the figure
 plt.subplot2grid((num_rows + 2, 5), (0, 0), colspan=5, rowspan=2)
-
+mini = min([len(x) for x in test_accuracies])
 for i, model_construction in enumerate(model_constructions):
     # Generate x values. Assuming they should go from 1 to the length of the accuracy list + 1
-    x_values = list(range(1, len(test_accuracies[i]) + 1))
+    x_values = list(range(1, mini + 1))
 
     # Plot test accuracies for this model
-    plt.plot(x_values, test_accuracies[i], label=f'Test Accuracy for {model_construction}')
+    plt.plot(x_values, test_accuracies[i][:mini], label=f'Test Accuracy for {model_construction}')
 
 plt.xlabel('Step')
 plt.ylabel('Accuracy')

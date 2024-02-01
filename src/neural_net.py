@@ -12,39 +12,36 @@ import pickle
 want_plot = False
 cuda = torch.cuda.is_available()
 # cuda = False
-# Laden des CIFAR-10-Datensatzes
-transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-
-train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transform, download=True)
-test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transform, download=True)
-
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 
 # Einfaches CNN-Modell
 class SimpleCNN(nn.Module):
-    def __init__(self, first_pannel_number, second_pannel_number, kernel_size, first_conneceted_layer_numberm):
+    def __init__(self, first_pannel_number, second_pannel_number, third_pannel_number,kernel_size, first_conneceted_layer_number, second_conneceted_layer_number):
         super(SimpleCNN, self).__init__()
-        self.second_pannel_number = second_pannel_number
+        self.third_pannel_number = third_pannel_number
         padding = 1 if kernel_size == 3 else 2
         self.conv1 = nn.Conv2d(3, first_pannel_number, kernel_size, padding=padding)
         self.bn1 = nn.BatchNorm2d(first_pannel_number)  # BatchNorm after first conv layer
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(first_pannel_number, second_pannel_number, kernel_size, padding=padding)
         self.bn2 = nn.BatchNorm2d(second_pannel_number)  # BatchNorm after second conv layer
-        self.fc1 = nn.Linear(second_pannel_number * 8 * 8, first_conneceted_layer_numberm)
-        self.fc2 = nn.Linear(first_conneceted_layer_numberm, 10)
+        self.conv3 = nn.Conv2d(second_pannel_number, third_pannel_number, kernel_size, padding=padding)
+        self.bn3 = nn.BatchNorm2d(third_pannel_number)
+        self.fc1 = nn.Linear(third_pannel_number * 8 * 8, first_conneceted_layer_number)
+        self.fc2 = nn.Linear(first_conneceted_layer_number, second_conneceted_layer_number)
+        self.fc3 = nn.Linear(second_conneceted_layer_number, 10)
 
     def forward(self, x):
         x = self.pool(F.relu(self.bn1(self.conv1(x))))
         x = self.pool(F.relu(self.bn2(self.conv2(x))))
-        x = x.view(-1, self.second_pannel_number * 8 * 8)
+        x = F.relu(self.bn3(self.conv3(x)))
+        x = x.view(-1, self.third_pannel_number * 8 * 8)
         x = F.relu(self.fc1(x))
-        x = self.fc2(x)
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
         x = F.softmax(x, dim=1)
         return x
 
-list_of_model_constructions = [[[16,32],3,[128],0.0003], [[16,32],5,[128],0.0003],[[32,128],3,[256],0.0003], [[32,128],5,[256],0.0003], [[8,16],3,[64],0.0003], [[8,16],5,[64],0.0003]]  # replace with your list of model constructions
+list_of_model_constructions = [[[24,64,128],5,[256,128],0.0003,'Adam', 64],[[24,64,128],5,[256,128],0.0003,'Adam', 32],[[24,64,128],5,[256,128],0.0003,'Adam', 128],[[24,64,128],5,[256,128],0.001,'Adam', 64], [[24,64,128],5,[256,128],0.0001,'Adam', 64]] # replace with your list of model constructions
 start = time.perf_counter()
 for model_construction_numbers in list_of_model_constructions:
 
@@ -52,18 +49,28 @@ for model_construction_numbers in list_of_model_constructions:
     fc_part = '_'.join(str(num) for num in model_construction_numbers[2])
     learning_rate = model_construction_numbers[3]
     kernel_size = model_construction_numbers[1]
+    optimizer_type = model_construction_numbers[4]
+    batch_size = model_construction_numbers[5]
 
-    model_construction = f'conv_{conv_part}_ks_{kernel_size}_fc_{fc_part}_lr_{learning_rate}'
+    model_construction = f'conv_{conv_part}_ks_{kernel_size}_fc_{fc_part}_lr_{learning_rate}_opt_{optimizer_type}_bs_{batch_size}'
+    # Laden des CIFAR-10-Datensatzes
+    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-    
+    train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transform, download=True)
+    test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transform, download=True)
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
     #model_construction = '16_32-8-8_128'
-    first_pannel_number, second_pannel_number, first_conneceted_layer_number = model_construction_numbers[0][0], model_construction_numbers[0][1], model_construction_numbers[2][0]
+    first_pannel_number, second_pannel_number, third_pannel_number ,first_conneceted_layer_number, second_conneceted_layer_number= model_construction_numbers[0][0], model_construction_numbers[0][1],model_construction_numbers[0][2], model_construction_numbers[2][0], model_construction_numbers[2][1]
     # Modell, Verlustfunktion und Optimierer erstellen
-    model = SimpleCNN(first_pannel_number, second_pannel_number, kernel_size, first_conneceted_layer_number)
-
-    #optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    model = SimpleCNN(first_pannel_number, second_pannel_number, third_pannel_number, kernel_size, first_conneceted_layer_number, second_conneceted_layer_number)
+    if optimizer_type == 'Adam':
+        optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    elif optimizer_type == 'SGD':
+        optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
+    
 
     if os.path.exists(os.path.join('models','neural_net', f'final_model_{model_construction}.pth')):
         model.load_state_dict(torch.load(os.path.join('models','neural_net', f'final_model_{model_construction}.pth')))
@@ -97,7 +104,7 @@ for model_construction_numbers in list_of_model_constructions:
 
     # Training
     try:
-        for epoch in range(151):  # Anzahl der Epochen anpassen
+        for epoch in range(51):  # Anzahl der Epochen anpassen
             if len(train_accuracies) % 5 == 0:
                 print('train_iteration: ', len(train_accuracies))
             correct_train = 0
@@ -130,7 +137,7 @@ for model_construction_numbers in list_of_model_constructions:
             train_accuracies.append(100 * correct_train / total_train)
             test_accuracies.append(100 * correct_test / total_test)
 
-            if len(train_accuracies) % 10 == 0:
+            if len(train_accuracies) % 5 == 0:
                 torch.save(model.state_dict(), os.path.join('models','neural_net', f'running_{model_construction}', f'running_model_epoch({len(test_accuracies)})_{model_construction}.pth'))
                 torch.save(optimizer.state_dict(), os.path.join('models','optimizer', f'running_{model_construction}', f'running_optimizer_epoch({len(test_accuracies)})_{model_construction}.pth'))
                 with open(os.path.join('models','train_accuracy', f'running_{model_construction}', f'running_train_epoch({len(test_accuracies)})_{model_construction}.pkl'), 'wb') as f:
