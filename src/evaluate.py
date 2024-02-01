@@ -3,7 +3,7 @@ import pickle
 import os
 import math
 
-model_constructions = ['16_32-8-8_128', '16_32-8-8_128', '16_32-8-8_128', '16_32-8-8_128', '16_32-8-8_128', '16_32-8-8_128']  # replace with your list of model constructions
+model_constructions = ['conv_16_32_ks_3_fc_128_lr_0.0003', 'conv_16_32_ks_5_fc_128_lr_0.0003','conv_32_128_ks_3_fc_256_lr_0.0003', 'conv_32_128_ks_5_fc_256_lr_0.0003','conv_8_16_ks_3_fc_64_lr_0.0003', 'conv_8_16_ks_5_fc_64_lr_0.0003']  
 
 train_accuracies = []
 test_accuracies = []
