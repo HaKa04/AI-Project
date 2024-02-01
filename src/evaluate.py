@@ -3,7 +3,22 @@ import pickle
 import os
 import math
 
-model_constructions = ['conv_16_32_ks_3_fc_128_lr_0.0003_opt_Adam', 'conv_16_32_ks_5_fc_128_lr_0.0003_opt_Adam','conv_32_128_ks_3_fc_256_lr_0.0003_opt_Adam', 'conv_32_128_ks_5_fc_256_lr_0.0003_opt_Adam','conv_8_16_ks_3_fc_64_lr_0.0003_opt_Adam', 'conv_8_16_ks_5_fc_64_lr_0.0003_opt_Adam', 'conv_16_32_64_ks_5_fc_128_64_lr_0.0003_opt_Adam', 'conv_16_32_64_ks_5_fc_128_64_lr_0.0003_opt_SGD', 'conv_24_64_128_ks_5_fc_256_128_lr_0.0003_opt_Adam','conv_24_64_128_ks_5_fc_256_128_lr_0.0003_opt_SGD','conv_12_24_48_ks_5_fc_96_48_lr_0.0003_opt_Adam','conv_12_24_48_ks_5_fc_96_48_lr_0.0003_opt_SGD']  
+twolayers_different_kernel_size = ['conv_16_32_ks_3_fc_128_lr_0.0003_opt_Adam', 'conv_16_32_ks_5_fc_128_lr_0.0003_opt_Adam','conv_32_128_ks_3_fc_256_lr_0.0003_opt_Adam', 
+                       'conv_32_128_ks_5_fc_256_lr_0.0003_opt_Adam','conv_8_16_ks_3_fc_64_lr_0.0003_opt_Adam', 'conv_8_16_ks_5_fc_64_lr_0.0003_opt_Adam']
+
+threelayers_opimizers = ['conv_16_32_64_ks_5_fc_128_64_lr_0.0003_opt_Adam', 'conv_16_32_64_ks_5_fc_128_64_lr_0.0003_opt_SGD', 'conv_24_64_128_ks_5_fc_256_128_lr_0.0003_opt_Adam',
+                       'conv_24_64_128_ks_5_fc_256_128_lr_0.0003_opt_SGD','conv_12_24_48_ks_5_fc_96_48_lr_0.0003_opt_Adam','conv_12_24_48_ks_5_fc_96_48_lr_0.0003_opt_SGD']
+
+batchsizes_learningrates = ['conv_24_64_128_ks_5_fc_256_128_lr_0.0003_opt_Adam_bs_32','conv_24_64_128_ks_5_fc_256_128_lr_0.0003_opt_Adam_bs_64','conv_24_64_128_ks_5_fc_256_128_lr_0.0003_opt_Adam_bs_128',
+                       'conv_24_64_128_ks_5_fc_256_128_lr_0.0001_opt_Adam_bs_64', 'conv_24_64_128_ks_5_fc_256_128_lr_0.001_opt_Adam_bs_64']  
+
+learning_rates = ['conv_24_64_128_ks_5_fc_256_128_lr_0.0002_opt_Adam_bs_64','conv_24_64_128_ks_5_fc_256_128_lr_0.0003_opt_Adam_bs_64', 'conv_24_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64','conv_24_64_128_ks_5_fc_256_128_lr_0.0005_opt_Adam_bs_64',]
+
+bigtest = ['conv_32_64_128_128_ks_5_fc_128_256_64_lr_0.0004_opt_Adam_bs_64', 'conv_24_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64']
+
+dropout = ['conv_32_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64_do_0.5','conv_32_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64_do_0.4','conv_32_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64_do_0.3','conv_32_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64_do_0.2','conv_32_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64_do_0.1','conv_32_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64_do_0']
+
+model_constructions = ['conv_24_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64', 'conv_32_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64_do_0']
 
 train_accuracies = []
 test_accuracies = []
@@ -36,6 +51,7 @@ plt.ylabel('Accuracy')
 plt.legend()
 
 # Create a subplot for each model
+'''
 for i, model_construction in enumerate(model_constructions):
     plt.subplot2grid((num_rows + 2, 5), (i // 5 + 2, i % 5))
     
@@ -51,4 +67,5 @@ for i, model_construction in enumerate(model_constructions):
 plt.subplots_adjust(wspace=0.5, hspace=0.5)
 
 plt.tight_layout()
+'''
 plt.show()
