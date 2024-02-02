@@ -70,6 +70,12 @@ for image_file in image_files:
         output = model(image)
     predicted_class = torch.argmax(output).item()
 
+    
+    probabilities = output[0].numpy()
+    for i, probability in enumerate(probabilities):
+        print(f"Label: {class_names[i]}, Wahrscheinlichkeit: {probability}")
+
+
     # Zeigen Sie das skalierte Bild und das vorhergesagte Label an
     plt.figure(figsize=(6, 6))
     plt.imshow(scaled_image)

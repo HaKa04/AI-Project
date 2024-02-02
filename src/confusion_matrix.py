@@ -39,6 +39,7 @@ model = SimpleCNN()
 model.load_state_dict(torch.load(os.path.join('models','optimal_net', 'running_model_epoch(60)_conv_32_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64_do_0.pth')))
 model.eval()
 
+
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transform, download=True)

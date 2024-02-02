@@ -51,7 +51,7 @@ plt.ylabel('Accuracy')
 plt.legend()
 
 # Create a subplot for each model
-'''
+
 for i, model_construction in enumerate(model_constructions):
     plt.subplot2grid((num_rows + 2, 5), (i // 5 + 2, i % 5))
     
@@ -67,5 +67,5 @@ for i, model_construction in enumerate(model_constructions):
 plt.subplots_adjust(wspace=0.5, hspace=0.5)
 
 plt.tight_layout()
-'''
+
 plt.show()
