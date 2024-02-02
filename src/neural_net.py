@@ -54,7 +54,7 @@ class SimpleCNN(nn.Module):
         x = F.softmax(x, dim=1)
         return x
 
-list_of_model_constructions = [[[32,64,128],5,[256,128],0.0004,'Adam', 64,0.5], [[32,64,128],5,[256,128],0.0004,'Adam', 64,0.4],[[32,64,128],5,[256,128],0.0004,'Adam', 64,0.3], [[32,64,128],5,[256,128],0.0004,'Adam', 64,0.2],[[32,64,128],5,[256,128],0.0004,'Adam', 64,0.1],[[32,64,128],5,[256,128],0.0004,'Adam', 64,0]] # replace with your list of model constructions
+list_of_model_constructions = [[[32,64,128],5,[256,128],0.0004,'Adam', 64,0.5]] # replace with your list of model constructions
 start = time.perf_counter()
 for model_construction_numbers in list_of_model_constructions:
 
