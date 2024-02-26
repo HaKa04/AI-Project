@@ -6,6 +6,8 @@ from torch.utils.data import DataLoader
 from torch import nn
 from torch.functional import F
 import itertools
+from matplotlib import pyplot as plt
+import numpy as np
 
 class SimpleCNN(nn.Module):
     def __init__(self):
@@ -33,60 +35,23 @@ class SimpleCNN(nn.Module):
         x = F.softmax(x, dim=1)
         return x
     
-
+# Laden Sie das vortrainierte Modell
 model_construction = 'conv_32_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64_do_0'
 model = SimpleCNN()
 model.load_state_dict(torch.load(os.path.join('models','optimal_net', 'running_model_epoch(60)_conv_32_64_128_ks_5_fc_256_128_lr_0.0004_opt_Adam_bs_64_do_0.pth')))
 model.eval()
 
-
+# Definieren Sie die Transformationen für die Bilder
 transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
+# Laden Sie den Testdatensatz
 test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transform, download=True)
 
+# Erstellen Sie einen DataLoader für den Testdatensatz
 test_loader = DataLoader(test_dataset, shuffle=False)
-'''
-# Testen des Modells
-correct = 0
-total = 0
-with torch.no_grad():
-    for data in test_loader:
-        images, labels = data
-        outputs = model(images)
-        _, predicted = torch.max(outputs.data, 1)  # Index des maximalen Elements
-        total += labels.size(0)
-        correct += (predicted == labels).sum().item()
-print('Genauigkeit des Netzes auf den 10000 Testbildern: %d %%' % (
-        100 * correct / total))
-'''
 
-# Testen des Modells auf einzelnen Bildern
-import matplotlib.pyplot as plt
-import numpy as np
-import random
-# Wählen Sie ein Bild aus dem Testdatensatz
-image_number = random.randint(0, len(test_dataset))
-image, label = test_dataset[image_number]  # Wählen Sie das erste Bild
-image = image.unsqueeze(0)  # Fügen Sie eine zusätzliche Dimension hinzu, um eine Batch-Größe von 1 zu erstellen
-
+# Definieren Sie die Klassennamen
 class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
-
-# Machen Sie eine Vorhersage mit dem Modell
-model.eval()  # Setzen Sie das Modell in den Evaluierungsmodus
-with torch.no_grad():
-    output = model(image)
-predicted_class = torch.argmax(output).item()
-
-predicted_label = class_names[predicted_class]
-true_label = class_names[label]
-
-# Zeigen Sie das Bild an
-image = image.squeeze(0)  # Entfernen Sie die zusätzliche Dimension
-image = image / 2 + 0.5  # Denormalisieren Sie das Bild
-npimg = image.numpy()
-plt.imshow(np.transpose(npimg, (1, 2, 0)))
-plt.title(f'Bild {image_number}, Predicted Label: {predicted_label}, True Label: {true_label}')
-plt.show()
 
 # Initialisieren Sie die Konfusionsmatrix
 confusion_matrix = torch.zeros(10, 10)
