@@ -175,7 +175,7 @@ for model_construction_numbers in list_of_model_constructions:
     # Optimizer speichern
     torch.save(optimizer.state_dict(), os.path.join('models','optimizer', f'final_optimizer_{model_construction}.pth'))
 
-    # Speichern der Listen
+    # Speichern der Listen der Tets und Train-Accuracies
     with open(os.path.join('models','train_accuracy', f'final_train_{model_construction}.pkl'), 'wb') as f:
         pickle.dump(train_accuracies, f)
 

@@ -6,7 +6,31 @@ from torch.utils.data import DataLoader
 from torch import nn
 from torch.functional import F
 import itertools
+from PIL import Image
+from pdf2image import convert_from_path
 
+def convert_png_to_jpg(path):
+    jpg_path = path.replace('.png', '.jpg')
+    img = Image.open(path)  # Öffnen des PNG-Bildes
+    rgb_img = img.convert('RGB')  # Konvertieren des PNG-Bildes in RGB-Format
+    rgb_img.save(jpg_path, 'JPEG')  # Speichern des Bildes im JPEG-Format
+    os.remove(path)  # Löschen des PNG-Bildes
+
+def convert_tiff_to_jpg(path):
+    jpg_path = path.replace('.tiff', '.jpg')  # Ersetzen der .tiff-Erweiterung durch .jpg
+    img = Image.open(path)  # Öffnen des TIFF-Bildes
+    rgb_img = img.convert('RGB')  # Konvertieren des TIFF-Bildes in RGB-Format
+    rgb_img.save(jpg_path, 'JPEG')  # Speichern des Bildes im JPEG-Format
+    os.remove(path)  # Löschen des TIFF-Bildes
+
+def convert_pdf_to_jpg(path):
+    jpg_path = path.replace('.pdf', '.jpg')  # Ersetzen der .pdf-Erweiterung durch .jpg
+    images = convert_from_path(path)  # Konvertieren des PDFs in eine Liste von Bildern
+    for i, image in enumerate(images):
+        image.save(jpg_path if i == 0 else f"{jpg_path[:-4]}_{i}.jpg", 'JPEG')  # Speichern der Bilder im JPEG-Format
+    os.remove(path)  # Löschen des PDFs
+
+# Klasse für das CNN-Modell
 class SimpleCNN(nn.Module):
     def __init__(self):
         super(SimpleCNN, self).__init__()
@@ -52,6 +76,17 @@ transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5
 # Iterieren Sie über alle Bilder
 for image_file in image_files:
     # Laden Sie das Bild
+    if image_file.endswith('.png'):
+        convert_png_to_jpg(os.path.join(image_folder, image_file))
+        image_file = image_file.replace('.png', '.jpg')
+    elif image_file.endswith('.tiff'):
+        convert_tiff_to_jpg(os.path.join(image_folder, image_file))
+        image_file = image_file.replace('.tiff', '.jpg')
+    elif image_file.endswith('.pdf'):
+        convert_pdf_to_jpg(os.path.join(image_folder, image_file))
+        image_file = image_file.replace('.pdf', '.jpg')
+    if not image_file.lower().endswith(('.jpg', '.jpeg')):
+        print(f"Unsupported file format: {image_file}")
     image_path = os.path.join(image_folder, image_file)
     original_image = Image.open(image_path)
 
